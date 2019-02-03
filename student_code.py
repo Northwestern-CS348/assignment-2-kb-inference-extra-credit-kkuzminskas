@@ -151,17 +151,17 @@ class KnowledgeBase(object):
             sup_r = inst_supported_by[0]
 
         if sup_f.asserted:
-            assert_str_f = " ASSERTED"
+            assert_str_f = " ASSERTED\n"
         else:
-            assert_str_f = ""
+            assert_str_f = "\n"
 
         if sup_r.asserted:
-            assert_str_r = " ASSERTED"
+            assert_str_r = " ASSERTED\n"
         else:
-            assert_str_r = ""
+            assert_str_r = "\n"
 
 
-        ret += curr_indent + indent + indent + "fact: " + str(sup_f.statement) + assert_str_f + "\n"
+        ret += curr_indent + indent + indent + "fact: " + str(sup_f.statement) + assert_str_f
 
         ret += self.help_kb_explain(sup_f, curr_indent + indent + indent)
 
@@ -172,7 +172,7 @@ class KnowledgeBase(object):
 
         ret = ret[:-2]
 
-        ret += ") -> " + str(sup_r.rhs) + assert_str_r + "\n"
+        ret += ") -> " + str(sup_r.rhs) + assert_str_r
 
         ret += self.help_kb_explain(sup_r, curr_indent + indent + indent)
 
@@ -264,13 +264,13 @@ class KnowledgeBase(object):
                     fact = f
 
 
-            ret = "fact: " + str(fact.statement) + "\n"
+            ret = "fact: " + str(fact.statement)
 
 
             if fact.asserted:
-                print("is fact asserted")
-                print(fact.asserted)
-                ret += " ASSERTED"
+                ret += " ASSERTED\n"
+            else:
+                ret += "\n"
 
 
             for sup in fact.supported_by:
@@ -290,10 +290,18 @@ class KnowledgeBase(object):
                 if r == fact_or_rule:
                     rule = r
 
-            ret = "rule: " + str(fact.statement) + "\n"
+            ret = "rule: ("
+            for stat in rule.lhs:
+                ret += str(stat) + ", "
 
-            if fact.asserted:
-                ret += " ASSERTED"
+            ret = ret[:-2]
+
+            ret += ") -> " + str(rule.rhs)
+
+            if rule.asserted:
+                ret += " ASSERTED\n"
+            else:
+                ret += "\n"
 
 
             for sup in rule.supported_by:
@@ -306,6 +314,7 @@ class KnowledgeBase(object):
             print("Error: Input was not a fact or rule")
             return False;
 
+        print(ret)
         return ret;
 
 
