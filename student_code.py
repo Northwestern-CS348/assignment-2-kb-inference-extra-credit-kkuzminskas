@@ -130,6 +130,119 @@ class KnowledgeBase(object):
         # Implementation goes here
         # Not required for the extra credit assignment
 
+
+    def help_kb_explain(self, fact_or_rule, curr_indent):
+        # Student code goes here
+        ret = ""
+        indent = "  "
+
+
+        if isinstance(fact_or_rule, Fact):
+            # check if it is in the KB
+            if not fact_or_rule in self.facts:
+                return ""
+
+            for f in self.facts:
+                if fact_or_rule == f:
+                    fact = f
+
+
+            if not fact.supported_by:
+                return ""
+
+            # new line
+            ret += curr_indent + indent + "SUPPORTED BY \n"
+
+            for sup in fact.supported_by:
+                if isinstance(sup[0], Fact):
+                    sup_f = sup[0]
+                    sup_r = sup[1]
+                else:
+                    sup_f = sup[1]
+                    sup_r = sup[0]
+
+                if sup_f.asserted:
+                    assert_str_f = " ASSERTED"
+                else:
+                    assert_str_f = ""
+
+                if sup_r.asserted:
+                    assert_str_r = " ASSERTED"
+                else:
+                    assert_str_r = ""
+
+
+                ret += curr_indent + indent + indent + "fact: " + str(sup_f.statement) + assert_str_f + "\n"
+
+                ret += self.help_kb_explain(sup_f, curr_indent + indent + indent)
+
+                # rule
+                ret += curr_indent + indent + "rule: ("
+                for stat in sup_r.lhs:
+                    ret += str(stat) + ", "
+
+                ret = ret[:-2]
+
+                ret += ") -> " + str(sup_r.rhs) + assert_str_r + "\n"
+
+                ret += self.help_kb_explain(sup_r, curr_indent + indent + indent)
+
+
+        elif isinstance(fact_or_rule, Rule):
+            if not fact_or_rule in self.rules:
+                return ""
+
+
+            for r in self.rules:
+                if r == fact_or_rule:
+                    rule = r
+
+            if not rule.supported_by:
+                return ""
+
+            # new line
+            ret += curr_indent + indent + "SUPPORTED BY \n"
+
+            for sup in rule.supported_by:
+                if isinstance(sup[0], Fact):
+                    sup_f = sup[0]
+                    sup_r = sup[1]
+                else:
+                    sup_f = sup[1]
+                    sup_r = sup[0]
+
+                if sup_f.asserted:
+                    assert_str_f = " ASSERTED"
+                else:
+                    assert_str_f = ""
+
+                if sup_r.asserted:
+                    assert_str_r = " ASSERTED"
+                else:
+                    assert_str_r = ""
+
+                ret += curr_indent + indent + indent + "fact: " + str(sup_f.statement) + assert_str_f + "\n"
+
+                ret += self.help_kb_explain(sup_f, curr_indent + indent + indent)
+
+
+                # rule
+                ret += curr_indent + indent + indent + "rule: ("
+                for stat in sup_r.lhs:
+                    ret += str(stat) + ", "
+
+                ret = ret[:-2]
+
+                ret += ") -> " + str(sup_r.rhs) + assert_str_r + "\n"
+
+                ret += self.help_kb_explain(sup_r, curr_indent + indent + indent)
+        else:
+            print("Error: Input was not a fact or rule")
+            return False;
+
+
+        return ret;
+
     def kb_explain(self, fact_or_rule):
         """
         Explain where the fact or rule comes from
@@ -142,6 +255,131 @@ class KnowledgeBase(object):
         """
         ####################################################
         # Student code goes here
+        ret = ""
+        indent = "  "
+
+        if isinstance(fact_or_rule, Fact):
+            # check if it is in the KB
+            if not fact_or_rule in self.facts:
+                return "Fact is not in the KB"
+
+            for f in self.facts:
+                if fact_or_rule == f:
+                    fact = f
+
+
+            ret = "fact: " + str(fact.statement) + "\n"
+
+
+            if fact.asserted:
+                print("is fact asserted")
+                print(fact.asserted)
+                ret += " ASSERTED"
+
+
+            for sup in fact.supported_by:
+
+                # new line
+                ret += indent + "SUPPORTED BY \n"
+
+                if isinstance(sup[0], Fact):
+                    sup_f = sup[0]
+                    sup_r = sup[1]
+                else:
+                    sup_f = sup[1]
+                    sup_r = sup[0]
+
+                if sup_f.asserted:
+                    assert_str_f = " ASSERTED"
+                else:
+                    assert_str_f = ""
+
+                if sup_r.asserted:
+                    assert_str_r = " ASSERTED"
+                else:
+                    assert_str_r = ""
+
+
+                ret += indent + indent + "fact: " + str(sup_f.statement) + assert_str_f + "\n"
+
+                ret += self.help_kb_explain(sup_f, indent + indent)
+
+                # rule
+                ret += indent + indent + "rule: ("
+
+                count = 0
+                for stat in sup_r.lhs:
+                    ret += str(stat) + ", "
+
+                ret = ret[:-2]
+
+                ret += ") -> " + str(sup_r.rhs) + assert_str_r + "\n"
+
+                ret += self.help_kb_explain(sup_r, indent + indent)
+
+
+
+        elif isinstance(fact_or_rule, Rule):
+            # check if it is in the KB
+            if not fact_or_rule in self.rules:
+                return "Rule is not in the KB"
+
+
+            for r in self.rules:
+                if r == fact_or_rule:
+                    rule = r
+
+            ret = "rule: " + str(fact.statement) + "\n"
+
+            if fact.asserted:
+                ret += " ASSERTED"
+
+            for sup in rule.supported_by:
+                # new line
+                ret += indent + "SUPPORTED BY \n"
+
+                if isinstance(sup[0], Fact):
+                    sup_f = sup[0]
+                    sup_r = sup[1]
+                else:
+                    sup_f = sup[1]
+                    sup_r = sup[0]
+
+                if sup_f.asserted:
+                    assert_str_f = " ASSERTED"
+                else:
+                    assert_str_f = ""
+
+                if sup_r.asserted:
+                    assert_str_r = " ASSERTED"
+                else:
+                    assert_str_r = ""
+
+
+
+                ret += indent + indent + "fact: " + str(sup_f.statement) + assert_str_f + "\n"
+
+                ret += self.help_kb_explain(sup_f, indent + indent)
+
+
+                # rule
+                ret += indent + indent + "rule: ("
+                for stat in sup_r.lhs:
+                    ret += str(stat) + ", "
+
+                ret = ret[:-2]
+
+                ret += ") -> " + str(sup_r.rhs) + assert_str_r + "\n"
+
+                ret += self.help_kb_explain(sup_r, indent + indent)
+
+        else:
+            print("Error: Input was not a fact or rule")
+            return False;
+
+        return ret;
+
+
 
 
 class InferenceEngine(object):
@@ -154,7 +392,7 @@ class InferenceEngine(object):
             kb (KnowledgeBase) - A KnowledgeBase
 
         Returns:
-            Nothing            
+            Nothing
         """
         printv('Attempting to infer from {!r} and {!r} => {!r}', 1, verbose,
             [fact.statement, rule.lhs, rule.rhs])
